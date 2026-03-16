@@ -21,7 +21,6 @@ Une fois demarre, ouvre:
 
 Endpoint principal:
 
-- `GET /api/certificates/inspect?url=https://www.google.com`
 - `GET /api/certificates/inspect-chain?url=https://www.google.com`
 - `GET /api/certificates/validate-trust?url=https://www.google.com`
 - `GET /api/certificates/health`
@@ -31,26 +30,6 @@ Le parametre `url` accepte:
 - une URL complete (`https://example.com`)
 - ou juste un host (`example.com`)
 
-## Exemple de reponse
-
-```json
-{
-  "input": "https://www.google.com",
-  "host": "www.google.com",
-  "port": 443,
-  "certificate": {
-    "subject": "CN=www.google.com",
-    "issuer": "CN=WR2, O=Google Trust Services, C=US",
-    "serialNumberHex": "...",
-    "notBefore": "2026-01-01T00:00:00Z",
-    "notAfter": "2026-03-31T23:59:59Z",
-    "sha256Fingerprint": "AA:BB:CC:...",
-    "pem": "-----BEGIN CERTIFICATE-----...",
-    "subjectAlternativeNames": ["www.google.com", "google.com"],
-    "inJavaKeystore": false
-  }
-}
-```
 
 ## Exemple de reponse (chaine complete)
 

@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 
 class SslCertificateServiceTest {
 
+
     @Test
     void validateTrustShouldReturnTrustedWhenChainAndHostnameAreValid() throws Exception {
         X509TrustManager trustManager = mock(X509TrustManager.class);

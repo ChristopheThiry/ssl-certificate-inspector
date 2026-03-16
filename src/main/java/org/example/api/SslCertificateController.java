@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.NotBlank;
 import org.example.model.CertificateChainResponse;
-import org.example.model.CertificateResponse;
 import org.example.model.KeystoreHealthResponse;
 import org.example.model.TrustValidationResponse;
 import org.example.service.SslCertificateService;
@@ -27,17 +26,6 @@ public class SslCertificateController {
         this.sslCertificateService = sslCertificateService;
     }
 
-    @GetMapping("/inspect")
-    @Operation(summary = "Get SSL certificate for a given site")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Certificate retrieved"),
-            @ApiResponse(responseCode = "400", description = "Invalid input or certificate retrieval failure")
-    })
-    public CertificateResponse inspect(
-            @Parameter(example = "https://www.google.com", description = "Domain or URL of the HTTPS site")
-            @RequestParam("url") @NotBlank String url) {
-        return sslCertificateService.inspect(url);
-    }
 
     @GetMapping("/inspect-chain")
     @Operation(summary = "Get full SSL certificate chain for a given site")

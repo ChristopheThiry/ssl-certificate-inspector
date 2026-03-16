@@ -2,7 +2,6 @@ package org.example.service;
 
 import org.example.model.CertificateChainResponse;
 import org.example.model.CertificateDetails;
-import org.example.model.CertificateResponse;
 import org.example.model.TrustValidationResponse;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +9,6 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.SSLSession;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -59,27 +57,12 @@ public class SslCertificateService {
         return javaKeystoreFingerprints.size();
     }
 
-    public CertificateResponse inspect(String rawInput) {
-        Target target = parseTarget(rawInput);
-
-        try (SSLSocket socket = (SSLSocket) SSLSocketFactory.getDefault().createSocket(target.host(), target.port())) {
-            socket.startHandshake();
-
-            Certificate[] chain = socket.getSession().getPeerCertificates();
-            if (chain.length == 0 || !(chain[0] instanceof X509Certificate certificate)) {
-                throw new IllegalStateException("No X509 certificate returned by server.");
-            }
-
-            return new CertificateResponse(rawInput, target.host(), target.port(), mapCertificate(certificate, isInJavaKeystore(certificate)));
-        } catch (Exception exception) {
-            throw new IllegalArgumentException("Unable to fetch SSL certificate: " + exception.getMessage(), exception);
-        }
-    }
 
     public CertificateChainResponse inspectChain(String rawInput) {
         Target target = parseTarget(rawInput);
 
-        try (SSLSocket socket = (SSLSocket) SSLSocketFactory.getDefault().createSocket(target.host(), target.port())) {
+        // Use an untrusted handshake so chain retrieval is independent from JVM trust store content.
+        try (SSLSocket socket = untrustedSocketFactory.create(target.host(), target.port())) {
             socket.startHandshake();
 
             Certificate[] chain = socket.getSession().getPeerCertificates();

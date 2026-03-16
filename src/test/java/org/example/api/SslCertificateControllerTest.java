@@ -2,7 +2,6 @@ package org.example.api;
 
 import org.example.model.CertificateChainResponse;
 import org.example.model.CertificateDetails;
-import org.example.model.CertificateResponse;
 import org.example.model.TrustValidationResponse;
 import org.example.service.SslCertificateService;
 import org.junit.jupiter.api.Test;
@@ -27,32 +26,6 @@ class SslCertificateControllerTest {
 
     @MockitoBean
     private SslCertificateService sslCertificateService;
-
-    @Test
-    void shouldReturnCertificateDetails() throws Exception {
-        when(sslCertificateService.inspect(anyString())).thenReturn(new CertificateResponse(
-                "https://example.com",
-                "example.com",
-                443,
-                new CertificateDetails(
-                        "CN=example.com",
-                        "CN=Example CA",
-                        "A1B2",
-                        "2026-01-01T00:00:00Z",
-                        "2027-01-01T00:00:00Z",
-                        "AA:BB:CC",
-                        "-----BEGIN CERTIFICATE-----...",
-                        List.of("example.com", "www.example.com"),
-                        false
-                )
-        ));
-
-        mockMvc.perform(get("/api/certificates/inspect").param("url", "https://example.com"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.host").value("example.com"))
-                .andExpect(jsonPath("$.port").value(443))
-                .andExpect(jsonPath("$.certificate.subject").value("CN=example.com"));
-    }
 
     @Test
     void shouldReturnCertificateChainDetails() throws Exception {
@@ -95,9 +68,9 @@ class SslCertificateControllerTest {
 
     @Test
     void shouldReturnBadRequestWhenServiceFails() throws Exception {
-        when(sslCertificateService.inspect(anyString())).thenThrow(new IllegalArgumentException("Invalid URL"));
+        when(sslCertificateService.inspectChain(anyString())).thenThrow(new IllegalArgumentException("Invalid URL"));
 
-        mockMvc.perform(get("/api/certificates/inspect").param("url", "not-a-host"))
+        mockMvc.perform(get("/api/certificates/inspect-chain").param("url", "not-a-host"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400));
     }
